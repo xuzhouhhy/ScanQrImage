@@ -45,7 +45,11 @@ class ScanFragment : Fragment(), Handler.Callback {
 
     private var mCamera: Camera? = null
 
+    private var focusManager: AutoFocusManager? = null
+
     private var mDecodeThread: DecodeHandlerThread? = null
+
+    private var manager: ScanCameraManager? = null
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -53,6 +57,12 @@ class ScanFragment : Fragment(), Handler.Callback {
             savedInstanceState: Bundle?)
             : View? {
         return inflater.inflate(R.layout.fragment_scan, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        context?.let { manager = ScanCameraManager(it) }
+        manager?.let { finderView.setCameraManager(it) }
     }
 
     override fun onResume() {
@@ -96,7 +106,7 @@ class ScanFragment : Fragment(), Handler.Callback {
             }
             MSG_HANDLER_DECODE_FAIL -> {
                 Log.i(TAG, "receive MSG_HANDLER_DECODE_FAIL")
-                focusAndCapture()
+                mCamera?.let { capturePreview(it) }
                 true
             }
             else -> false
@@ -135,27 +145,25 @@ class ScanFragment : Fragment(), Handler.Callback {
             mDecodeThread?.decodeHandler
                     ?.obtainMessage(DecodeHandlerThread.MSG_HANDLER_BITMAP_SIZE, Size(width, height))
                     ?.sendToTarget()
-            mCamera?.setPreviewTexture(textureView.surfaceTexture)
-            mCamera?.startPreview()
-            focusAndCapture()
+            mCamera?.let { camera ->
+                camera.setPreviewTexture(textureView.surfaceTexture)
+                camera.startPreview()
+                focusManager = AutoFocusManager(camera)
+                focusManager?.start()
+                capturePreview(camera)
+            }
         }
     }
 
-    private fun focusAndCapture() {
-        mCamera?.autoFocus { success, camera ->
-            if (success) {
-                camera.setOneShotPreviewCallback { data, callBackCamera ->
-                    Log.i(TAG, "focus success and capture data size:${data.size}")
-                    mDecodeThread?.decodeHandler
-                            ?.obtainMessage(DecodeHandlerThread.MSG_HANDLER_PREVIEW_FORMAT, callBackCamera.parameters.previewFormat)
-                            ?.sendToTarget()
-                    mDecodeThread?.decodeHandler
-                            ?.obtainMessage(DecodeHandlerThread.MSG_HANDLER_DECODE_BITMAP, data)
-                            ?.sendToTarget()
-                }
-            } else {
-               focusAndCapture()
-            }
+    private fun capturePreview(camera: Camera) {
+        camera.setOneShotPreviewCallback { data, callBackCamera ->
+            Log.i(TAG, "focus success and capture data size:${data.size}")
+            mDecodeThread?.decodeHandler
+                    ?.obtainMessage(DecodeHandlerThread.MSG_HANDLER_PREVIEW_FORMAT, callBackCamera.parameters.previewFormat)
+                    ?.sendToTarget()
+            mDecodeThread?.decodeHandler
+                    ?.obtainMessage(DecodeHandlerThread.MSG_HANDLER_DECODE_BITMAP, data)
+                    ?.sendToTarget()
         }
     }
 
@@ -227,6 +235,10 @@ class ScanFragment : Fragment(), Handler.Callback {
             it.startPreview()
             it.release()
             null
+        }
+        focusManager?.let {
+            it.stop()
+            focusManager = null
         }
     }
 
