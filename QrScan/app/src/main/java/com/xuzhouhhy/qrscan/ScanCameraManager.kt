@@ -10,15 +10,13 @@ import android.hardware.Camera
  * created by hanhongyun on 2018/11/13 14:14
  *
  */
-class ScanCameraManager(val context: Context) {
+class ScanCameraManager constructor(val context: Context, val camera: Camera) {
 
     companion object {
         val TAG = ScanCameraManager::class.java.simpleName
     }
 
-    var camera: Camera? = null
-
-    var cameraConfigurationManager = CameraConfigurationManager(context)
+    private var cameraConfigurationManager = CameraConfigurationManager(context, camera)
 
     /**
      *  取景框
@@ -37,8 +35,15 @@ class ScanCameraManager(val context: Context) {
         val rect = Rect(framingRect)
         val cameraResolution = cameraConfigurationManager.cameraResolution
         val screenResolution = cameraConfigurationManager.screenResolution
-        val ratio = cameraResolution.y / screenResolution.x
-        return@lazy Rect(rect.left * ratio, rect.top * ratio, rect.right * ratio, rect.bottom * ratio)
+        return@lazy Rect(rect.left * cameraResolution.x / screenResolution.x,
+                rect.top * cameraResolution.y / screenResolution.y,
+                rect.right * cameraResolution.x / screenResolution.x,
+                rect.bottom * cameraResolution.y / screenResolution.y)
     }
 
+    val cameraResolution
+        get() = cameraConfigurationManager.cameraResolution
+
+    val bestPreviewSize
+        get() = cameraConfigurationManager.bestPreviewSize
 }
