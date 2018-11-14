@@ -135,10 +135,7 @@ class ScanFragment : Fragment(), Handler.Callback {
                 requestCameraPermission()
                 return
             }
-            setCameraInfo(act, width, height)
-//            mDecodeThread?.decodeHandler
-//                    ?.obtainMessage(DecodeHandlerThread.MSG_HANDLER_BITMAP_SIZE, Size(sPair!!.first, sPair!!.second))
-//                    ?.sendToTarget()
+            setCameraInfo(act)
             mCamera?.let { camera ->
                 camera.setPreviewTexture(textureView.surfaceTexture)
                 camera.startPreview()
@@ -152,26 +149,15 @@ class ScanFragment : Fragment(), Handler.Callback {
     private fun capturePreview(camera: Camera) {
         camera.setOneShotPreviewCallback { data, callBackCamera ->
             Log.i(TAG, "focus success and capture data size:${data.size}")
-//            mDecodeThread?.decodeHandler
-//                    ?.obtainMessage(DecodeHandlerThread.MSG_HANDLER_PREVIEW_FORMAT, callBackCamera.parameters.previewFormat)
-//                    ?.sendToTarget()
             manager?.cameraResolution?.let {
                 mDecodeThread?.decodeHandler
                         ?.obtainMessage(DecodeHandlerThread.MSG_HANDLER_DECODE_BITMAP, it.x, it.y, data)
                         ?.sendToTarget()
             }
-//            manager?.cameraResolution?.let {
-//                mDecodeThread?.decodeHandler
-//                        ?.obtainMessage(DecodeHandlerThread.MSG_HANDLER_DECODE_BITMAP, data)
-//                        ?.sendToTarget()
-//                mDecodeThread?.decodeHandler
-//                        ?.obtainMessage(DecodeHandlerThread.MSG_HANDLER_DECODE_BITMAP, it.x, it.y, data)
-//                        ?.sendToTarget()
-//            }
         }
     }
 
-    private fun setCameraInfo(act: FragmentActivity, width: Int, height: Int) {
+    private fun setCameraInfo(act: FragmentActivity) {
         val numberOfCameras = Camera.getNumberOfCameras()
         val cameraInfo = Camera.CameraInfo()
         for (i in 0 until numberOfCameras) {
@@ -191,10 +177,6 @@ class ScanFragment : Fragment(), Handler.Callback {
                 parameters.setPreviewSize(bestPreviewSize.x, bestPreviewSize.y)
             }
             mDecodeThread?.scanManager = manager
-            //大小，固定竖屏
-//            val supportedPictureSizes = parameters.supportedPictureSizes
-//            val last = supportedPictureSizes.first()
-//            parameters.setPictureSize(last.width, last.height)
             //自动对焦
             parameters.focusMode = Camera.Parameters.FOCUS_MODE_AUTO
             //闪光灯关闭
@@ -204,10 +186,6 @@ class ScanFragment : Fragment(), Handler.Callback {
             setCameraOrientation(act, cameraInfo, camera)
             camera
         }
-
-//        return mCamera?.parameters?.pictureSize?.run {
-//            this.width to this.height
-//        }
     }
 
     private fun setCameraOrientation(act: FragmentActivity, cameraInfo: Camera.CameraInfo, camera: Camera) {
@@ -259,7 +237,6 @@ class ScanFragment : Fragment(), Handler.Callback {
     }
 
     class ConfirmationDialog : DialogFragment() {
-
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val parentFragment = parentFragment
             return AlertDialog.Builder(activity as Context)
@@ -274,7 +251,4 @@ class ScanFragment : Fragment(), Handler.Callback {
                     .create()
         }
     }
-
 }
-
-class Size(val width: Int, val height: Int)

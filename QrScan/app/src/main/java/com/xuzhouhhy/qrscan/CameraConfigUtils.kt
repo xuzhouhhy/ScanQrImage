@@ -87,8 +87,6 @@ class CameraConfigUtils {
             Log.i(TAG, "No suitable preview sizes, using default: $defaultSize")
             return defaultSize
         }
-
-
     }
 
 }
