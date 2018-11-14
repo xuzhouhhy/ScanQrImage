@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.xuzhouhhy.qrscan
 
 import android.hardware.Camera
@@ -9,11 +11,10 @@ import java.util.concurrent.RejectedExecutionException
  * created by hanhongyun on 2018/11/12 16:07
  *
  */
-@Suppress("DEPRECATION")
-class AutoFocusManager(val camera: Camera) : Camera.AutoFocusCallback {
+class AutoFocusManager(private val camera: Camera) : Camera.AutoFocusCallback {
 
     companion object {
-        private val AUTO_FOCUS_INTERVAL_MS = 1000L
+        private const val AUTO_FOCUS_INTERVAL_MS = 1000L
         val TAG = AutoFocusManager::class.java.simpleName
     }
 
@@ -77,7 +78,7 @@ class AutoFocusManager(val camera: Camera) : Camera.AutoFocusCallback {
         }
     }
 
-    class AutoFocusTask(val autoFocusManager: AutoFocusManager) : AsyncTask<Any, Any, Any>() {
+    class AutoFocusTask(private val autoFocusManager: AutoFocusManager) : AsyncTask<Any, Any, Any>() {
 
         override fun doInBackground(vararg params: Any?): Any {
             try {

@@ -20,7 +20,7 @@ class DecodeHandlerThread constructor(name: String, priority: Int)
 
     companion object {
         const val MSG_HANDLER_DECODE_BITMAP = 0
-        val TAG = DecodeHandlerThread::class.java.simpleName!!
+        val TAG = DecodeHandlerThread::class.java.simpleName
     }
 
     var decodeHandler: Handler? = null
@@ -50,28 +50,6 @@ class DecodeHandlerThread constructor(name: String, priority: Int)
                     scanManager?.framingRectInPreview?.let {
                         val width = msg.arg1
                         val height = msg.arg2
-
-//                        val yuvImage: YuvImage? = try {
-//                            YuvImage(data, ImageFormat.NV21, width, height, null)
-//                        } catch (e: IllegalArgumentException) {
-//                            Log.e(ScanFragment.TAG, Log.getStackTraceString(e))
-//                            null
-//                        }
-//                        val stream = ByteArrayOutputStream()
-//                        yuvImage?.compressToJpeg(Rect(0, 0, width, height), 100, stream)
-//                        val bitmap: Bitmap
-//                        if (stream.size() > 0) {
-//                            val byteArray = stream.toByteArray()
-//                            bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-//                        }
-//                        val rectBitmap: Bitmap
-//                        val rectStream = ByteArrayOutputStream()
-//                        yuvImage?.compressToJpeg(it, 100, rectStream)
-//                        if (rectStream.size() > 0) {
-//                            val byteArray = rectStream.toByteArray()
-//                            rectBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-//                        }
-
                         val source = PlanarYUVLuminanceSource(data, width, height, 0, 0, width, height, false)
                         val binaryBitmap = BinaryBitmap(HybridBinarizer(source))
                         val decode = try {

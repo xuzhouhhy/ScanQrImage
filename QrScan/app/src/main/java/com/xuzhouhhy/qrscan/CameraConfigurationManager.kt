@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.xuzhouhhy.qrscan
 
 import android.content.Context
@@ -10,12 +12,7 @@ import android.view.WindowManager
  *
  */
 
-@Suppress("DEPRECATION")
-class CameraConfigurationManager(val context: Context, val camera: Camera) {
-
-    companion object {
-        val TAG = CameraConfigurationManager::class.java.simpleName
-    }
+class CameraConfigurationManager(val context: Context, private val camera: Camera) {
 
     val screenResolution: Point by lazy {
         val manager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager

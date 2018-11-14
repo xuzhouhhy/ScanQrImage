@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.xuzhouhhy.qrscan
 
 import android.graphics.Point
@@ -8,7 +10,6 @@ import android.util.Log
  * created by hanhongyun on 2018/11/13 19:00
  *
  */
-@Suppress("DEPRECATION")
 class CameraConfigUtils {
 
     companion object {
