@@ -87,6 +87,16 @@ class CameraConfigUtils {
             Log.i(TAG, "No suitable preview sizes, using default: $defaultSize")
             return defaultSize
         }
+
+        fun findDesiredDimensionInRange(resolution: Int, hardMin: Int, hardMax: Int): Int {
+            val dim = 5 * resolution / 8 // Target 5/8 of each dimension
+            if (dim < hardMin) {
+                return hardMin
+            }
+            return if (dim > hardMax) {
+                hardMax
+            } else dim
+        }
     }
 
 }

@@ -33,4 +33,15 @@ class CameraConfigurationManager(val context: Context, val camera: Camera) {
         return@lazy CameraConfigUtils.findBestPreviewSizeValue(camera.parameters, screenResolution)
     }
 
+    val bestPreviewSizeOnScreen: Point by lazy {
+        val defaultSize = bestPreviewSize
+        val isScreenPortrait = screenResolution.x < screenResolution.y
+        val isPreviewSizePortrait = defaultSize.x < defaultSize.y
+        return@lazy if (isScreenPortrait == isPreviewSizePortrait) {
+            defaultSize
+        } else {
+            Point(defaultSize.y, defaultSize.x)
+        }
+    }
+
 }
